@@ -74,7 +74,9 @@
           <li><a href="about.html">About</a></li>
           <li><a href="resume.html">Resume</a></li>
           <li><a href="services.html">Services</a></li>
-          <li><a href="protosem3.3.html">Protosem 3.3</a></li>
+          <li><a href="protosem3.3.html" class="active"
+            
+              >Protosem 3.3</a></li>
           <li><a href="portfolio.html">Projects</a></li>
           <li class="dropdown"><a href="#"><span>Others</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
@@ -133,34 +135,583 @@
                   </ul>
                 <br>
                 <p>Both libraries come pre-installed with the Arduino IDE, so no extra installation is required.</p>
-                
+                <br>
+                <ul>
+                  <li><i></i> <span>Create six servo objects for controlling different joints.</span></li>
+                  <li><i></i> <span>Define pins for HC-05 Bluetooth module.</span></li>
+                  <li><i></i> <span>Declare variables to store current and previous servo positions.</span></li>
+                  <li><i></i> <span>Use arrays to store steps for automatic mode.</span></li>
+                  </ul>
 
                 <div class="code-container">
                   <div class="code-header">
-                      <span>HTML Example</span>
+                      <span>Code</span>
                       
                   </div>
-                  <pre><code class="language-cpp">#include &lt;SoftwareSerial.h&gt;
-                      #include &lt;Servo.h&gt;
+                  <pre><code class="language-cpp">
+                    #include <SoftwareSerial.h>  // For Bluetooth communication
+                      #include <Servo.h>           // For controlling servos
                       
-                      Servo servo01;
-                      Servo servo02;
-                      Servo servo03;
-                      Servo servo04;
-                      Servo servo05;
-                      Servo servo06;
+                      // Define Bluetooth Module RX & TX pins
+                      #define BT_RX 10
+                      #define BT_TX 11
                       
-                      SoftwareSerial Bluetooth(3, 4); // Arduino(RX, TX) - HC-05 Bluetooth (TX, RX)
+                      // Initialize Bluetooth serial communication
+                      SoftwareSerial Bluetooth(BT_RX, BT_TX);
                       
-                      int servo1Pos, servo2Pos, servo3Pos, servo4Pos, servo5Pos, servo6Pos; // current position
-                      int servo1PPos, servo2PPos, servo3PPos, servo4PPos, servo5PPos, servo6PPos; // previous position
-                      int servo01SP[50], servo02SP[50], servo03SP[50], servo04SP[50], servo05SP[50], servo06SP[50]; // for storing positions/steps
-                      int speedDelay = 20;
-                      int index = 0;
-                      String dataIn = "";</code></pre>
+                      // Define servo motors
+                      Servo base, shoulder, elbow, wrist, gripper, extraServo;
+                      
+                      // Variables to store positions
+                      int basePos = 90, shoulderPos = 90, elbowPos = 90, wristPos = 90, gripperPos = 90, extraPos = 90;
+                      int prevBase, prevShoulder, prevElbow, prevWrist, prevGripper, prevExtra;
+                      
+                      // Arrays for automatic mode
+                      int autoSteps[10][6];  // Stores 10 positions for the 6 servos
+                      int stepIndex = 0;
+                      
+                  </code></pre>
               </div>
+              <br>
+              <h4>2. Setup: Initializing Servos & Bluetooth Module</h4>
+              <br>
+              <p>In the <b>setup()</b> function, we initialize:</p>
+              <br>
+              <ul>
+                <li><i></i> <span>Servo motors – Attach them to their respective Arduino pins.</span></li>
+                <li><i></i> <span> Bluetooth module – Start serial communication with the HC-05 module.</span></li>
+                <li><i></i> <span>Initial arm position – Move the robotic arm to a neutral position using the <b>write()</b> function.</span></li>
+                </ul>
+                div class="code-container">
+                <div class="code-header">
+                    <span>Code</span>
+                    
+                </div>
+                <pre><code class="language-cpp">
+                  void setup() {
+                    // Attach servos to their respective pins
+                    base.attach(3);       
+                    shoulder.attach(5);
+                    elbow.attach(6);
+                    wrist.attach(9);
+                    gripper.attach(10);
+                    extraServo.attach(11);
                 
+                    // Start serial communication with Bluetooth module
+                    Bluetooth.begin(9600);
+                    Serial.begin(9600);
                 
+                    // Set initial positions for all servos (90° - neutral position)
+                    base.write(90);
+                    shoulder.write(90);
+                    elbow.write(90);
+                    wrist.write(90);
+                    gripper.write(90);
+                    extraServo.write(90);
+                
+                    // Allow some time for servos to reach position
+                    delay(500);
+                }     
+                </code></pre>
+                </div>
+                <br>
+                <h5>Why is this important?</h5>
+                <ul>
+                  <li><i></i> <span> Ensures all servos are correctly assigned to their pins.</span></li>
+                  <li><i></i> <span>Moves the robotic arm to a neutral position before accepting commands.</span></li>
+                  <li><i></i> <span> Initializes Bluetooth communication so the robot can receive data from a mobile app or controller.</span></li>
+                  </ul>
+                
+                  <h4>3. Loop: Receiving Bluetooth Commands & Controlling the Arm</h4>
+                  <br>
+                  <p>In the <u>loop()</u> function, the robotic arm constantly monitors incoming Bluetooth data from a smartphone or controller. Based on the received data, the servos adjust their positions accordingly.
+
+                  </p>
+                  <br>
+
+                  <h5>How It Works:</h5>
+                  <ul>
+                    <li><i></i> <span> Check for incoming data using <u>Bluetooth.available().</u></span></li>
+                    <li><i></i> <span>Read the received command using <u>readString().</u></span></li>
+                    <li><i></i> <span>Store the command in a variable <u>(dataIn).</u></span></li>
+                    <li><i></i> <span>Interpret the command and move the corresponding servo motor.</span></li>
+                    </ul>
+                  
+                    <div class="code-container">
+                      <div class="code-header">
+                          <span>Code</span>
+                          
+                      </div>
+                      <pre><code class="language-cpp">
+                        void loop() {
+                          // Check if data is available from the Bluetooth module
+                          if (Bluetooth.available()) {
+                              String dataIn = Bluetooth.readString();  // Read incoming data as a string
+                              Serial.println("Received: " + dataIn);   // Print received data for debugging
+                      
+                              // Control the robotic arm based on the received command
+                              if (dataIn == "BASE_LEFT") {
+                                  base.write(base.read() - 5);  // Rotate base to the left
+                              } 
+                              else if (dataIn == "BASE_RIGHT") {
+                                  base.write(base.read() + 5);  // Rotate base to the right
+                              } 
+                              else if (dataIn == "SHOULDER_UP") {
+                                  shoulder.write(shoulder.read() + 5);
+                              } 
+                              else if (dataIn == "SHOULDER_DOWN") {
+                                  shoulder.write(shoulder.read() - 5);
+                              }
+                              else if (dataIn == "ELBOW_UP") {
+                                  elbow.write(elbow.read() + 5);
+                              }
+                              else if (dataIn == "ELBOW_DOWN") {
+                                  elbow.write(elbow.read() - 5);
+                              }
+                              else if (dataIn == "WRIST_UP") {
+                                  wrist.write(wrist.read() + 5);
+                              }
+                              else if (dataIn == "WRIST_DOWN") {
+                                  wrist.write(wrist.read() - 5);
+                              }
+                              else if (dataIn == "GRIPPER_OPEN") {
+                                  gripper.write(gripper.read() + 10);  // Open gripper
+                              }
+                              else if (dataIn == "GRIPPER_CLOSE") {
+                                  gripper.write(gripper.read() - 10);  // Close gripper
+                              }
+                          }
+                      
+                          delay(100);  // Small delay to avoid excessive loop execution
+                      }
+                      
+                          
+                      </code></pre>
+                  </div>
+                  <br>
+
+                  <h5>Why Is This Important?</h5>
+                  <ul>
+                    <li><i></i> <span> Ensures real-time control of the robotic arm via Bluetooth.</span></li>
+                    <li><i></i> <span>Smooth and incremental movement for precise positioning.</span></li>
+                    <li><i></i> <span>Prevents excessive movement by limiting changes to small steps.</span></li>
+                   
+                    </ul>
+                    <br>
+                  <h3>Understanding the Android App Communication</h3>
+                  <br>
+                  <p>Now, let’s examine how the Android app communicates with the Arduino. Specifically, we’ll analyze the commands it sends when controlling the robotic arm via Bluetooth.
+
+                  </p>
+                  <br>
+                  <h4>How the App Sends Data:</h4>
+                  <ul>
+                    <li><i></i> <span>When a button is pressed in the app, it sends a specific text command via Bluetooth.</span></li>
+                    <li><i></i> <span> The Arduino receives this command and interprets it to move the corresponding servo motor.</span></li>
+                    <li><i></i> <span>Each button in the app corresponds to a predefined action, such as moving the base, shoulder, elbow, wrist, or gripper.</span></li>
+                    
+                    </ul>
+                    <br>
+                  <h4>Visualizing the Communication Flow:</h4>
+                  <ul>
+                    <li><i></i> <span>User presses a button in the Android app.</span></li>
+                    <li><i></i> <span>The app sends a text command via Bluetooth (e.g., "ELBOW_UP").</span></li>
+                    <li><i></i> <span>Arduino receives the command and moves the corresponding servo.</span></li>
+                    <li><i></i> <span>The robotic arm moves accordingly.</span></li>
+                    </ul>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/app .jpg" alt="" class="img-fluid services-img">
+                  <br>
+                  <p>The robotic arm control app was developed using MIT App Inventor, a simple yet powerful online tool for creating Android applications. Here's how the app works:
+
+                  </p>
+                  <br>
+                  <h4>App Layout & Components</h4>
+                  <br>
+                  <h5>1. Bluetooth Connectivity:</h5>
+                  <p>At the top of the app interface, there are two buttons designed for Bluetooth connection. These allow the smartphone to pair and communicate with the HC-05 Bluetooth module.</p>
+                  <br>
+                  <h5>2. Robot Arm Visualization:</h5>
+                  <p>On the left side, there is an image of the robotic arm, giving users a visual reference while controlling the servos.</p>
+                  <br>
+                  <h5>3. Servo Control Sliders:</h5>
+                  <p>On the right side, there are six sliders, each responsible for controlling a specific servo of the robotic arm. Moving a slider adjusts the corresponding servo position in real-time.</p>
+                  <br>
+                  <h5>4. Speed Control Slider:</h5>
+                  <p>In addition to servo controls, there is a seventh slider at the bottom, which allows users to adjust the movement speed of the robotic arm.</p>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/interface.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/i 1.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/i 2.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+                  
+                  <h4>How the App Works</h4>
+                  <ul>
+                    <li><i></i> <span> The user connects to the HC-05 Bluetooth module using the Bluetooth buttons.</span></li>
+                    <li><i></i> <span> The user adjusts the sliders, sending position data for each servo to the Arduino.</span></li>
+                    <li><i></i> <span> The Arduino interprets the commands and moves the servos accordingly.</span></li>
+                    <li><i></i> <span> The speed control slider modifies the movement speed of the robotic arm.</span></li>
+                    </ul>
+                    <br>
+                  <h4>App Functionality & Controls</h4>
+                  <br>
+                  <p>The robotic arm control app includes customized sliders and programming buttons to enhance user control and automation.</p>
+                  <br>
+                  <h5>Slider Configuration</h5>
+                  <br>
+                  <p>Each slider is uniquely configured with:</p>
+                  <ul>
+                    <li><i></i> <span>Different initial values – ensuring each servo starts from an optimal position.</span></li>
+                    <li><i></i> <span>Custom minimum and maximum values – tailored to match the movement range of each joint.</span></li>
+                    </ul>
+                  <br>
+                  <p>This setup prevents the robotic arm from exceeding its physical limits while ensuring smooth and precise movements.</p>
+
+                  <h5>Automation & Programming Controls</h5>
+                  <br>
+                  <p>At the bottom of the app, there are three essential buttons:</p>
+                  <br>
+                  <ul>
+                    <li><i></i> <span> <b>SAVE:</b> Stores the current servo positions, allowing users to create a sequence of movements.</span></li>
+                    <li><i></i> <span><b>RUN:</b> Executes the saved sequence, enabling the robotic arm to operate automatically.</span></li>
+                    <li><i></i> <span><b>RESET:</b> Clears all saved steps, resetting the system for a new motion sequence.</span></li>
+                    
+                    </ul>
+                  <br>
+                  <p>Below these buttons, a label displays the number of saved steps, providing real-time feedback on the programmed sequence.</p>
+                  <br>
+                  <h3>Bluetooth Connectivity in the App</h3>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/overall.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+                  <p>The first step in controlling the robotic arm is establishing a Bluetooth connection between the smartphone and the HC-05 module.</p>
+                  <br>
+                  <h4>Connection Setup</h4>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/b1.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/b2.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+                  <p>On the left side of the MIT App Inventor interface, we have blocks dedicated to:</p>
+                  <ul>
+                    <li><i></i> <span>Scanning for available Bluetooth devices – The app searches for nearby Bluetooth modules.</span></li>
+                    <li><i></i> <span>Displaying a list of detected devices – The user can select the HC-05 module from this list.</span></li>
+                    <li><i></i> <span>Establishing a connection – Once selected, the app initiates a connection to the module.</span></li>
+                    <li><i></i> <span>Providing connection feedback – A message appears confirming whether the connection was successful.</span></li>
+                    </ul>
+                  <br>
+                  <p>This setup ensures a seamless pairing process, allowing smooth communication between the app and the robotic arm.</p>
+                  <br>
+                  <h3>Servo Control via Sliders & Buttons
+                  </h3>
+                  <br>
+                  <p>The MIT App Inventor blocks for controlling the robotic arm include sliders for servo positioning and buttons for automated programming.</p>
+                  <br>
+                  <h4>Sliders for Servo Control</h4>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/b3.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/b4.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/b5.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/b6.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+                  <img src="assets/img/protosem.3.3/robotic_arm_controller/b7.png" alt="" class="img-fluid services-img">
+                  <br>
+                  <br>
+
+
+                  <h5>How It Works:</h5>
+                  <ul>
+                    <li><i></i> <span> Each slider corresponds to a specific servo motor.</span></li>
+                    <li><i></i> <span>When a slider is moved, the SendText function transmits a command via Bluetooth.</span></li>
+                    <li><i></i> <span>The command includes: A prefix indicating which servo is being adjusted & The current slider value (position of the servo in degrees).</span></li>
+                    <li><i></i> <span>The Arduino receives this data and adjusts the corresponding servo.</span></li>
+                    </ul>
+                  <br>
+                  <h3>Processing Incoming Bluetooth Data on Arduino</h3>
+                  <br>
+                  <p>On the Arduino side, we need to decode the received Bluetooth commands and move the corresponding servo motors accordingly.</p>
+                  <br>
+                  <h4>Decoding Bluetooth Commands</h4>
+                  <br>
+                  <h5>How It Works:</h5>
+                  <ul>
+                    <li><i></i> <span> The Bluetooth module sends data as text strings (e.g., "s1 90").</span></li>
+                    <li><i></i> <span> Using the startsWith() function, the Arduino checks the prefix to determine which servo to move.</span></li>
+                    <li><i></i> <span> Using the substring() function, it extracts the position value from the received data.</span></li>
+                    <li><i></i> <span> The extracted position value is converted into an integer and used to set the servo angle.</span></li>
+                    </ul>
+                  <br>
+                  <h3>Smooth Servo Motion Control on Arduino</h3>
+                  <br>
+                  <p>Instead of moving the servos instantly using write(), we implement smooth motion control to prevent jerky movements and mechanical stress on the robot arm.
+
+                  </p>
+                  <br>
+                  <h4>How It Works:</h4>
+                  <br>
+                  <ul>
+                    <li><i></i> <span>Directly calling write(position) moves the servo instantly at maximum speed.</span></li>
+                    <li><i></i> <span>To control the speed, we use a for loop to gradually move the servo from its previous position to the new position.</span></li>
+                    <li><i></i> <span>A delay between each step determines the speed of movement.</span></li>
+                    <li><i></i> <span>By adjusting the delay value, we can control the servo's transition speed.</span></li>
+                    </ul>
+                    <div class="code-container">
+                      <div class="code-header">
+                          <span>Code</span>
+                          
+                      </div>
+                      <pre><code class="language-cpp">
+                        int stepDelay = 5;  // Adjust this value to change the speed
+                        for (int pos = prevPosition; pos <= newPosition; pos++) {
+                        servo1.write(pos);
+                        delay(stepDelay);
+                        } 
+                      </code></pre>
+                  </div>
+                  <br>
+                  <h4>Key Benefits:</h4>
+                  <ul>
+                    <li><i></i> <span>Prevents sudden jerks and reduces stress on servo motors.</span></li>
+                    <li><i></i> <span>Improves precision by making smooth transitions between positions.</span></li>
+                    <li><i></i> <span>Allows dynamic speed control by adjusting the stepDelay value.</span></li>
+                    
+                    </ul>
+                    <br>
+                  <h4>Resetting the Robot Arm for New Programming</h4>
+                  <br>
+                  <p>When the RESET button is pressed, all stored motion data is cleared, and the robot arm is ready for new programming.
+
+                  </p>
+                  <br>
+                  <h5>How It Works (Based on Your Arduino Code)
+                  </h5>
+
+                  <ul>
+                    <li><i></i> <span>Clears all stored positions by resetting the arrays to zero.</span></li>
+                    <li><i></i> <span> Resets the index to allow new motion steps to be recorded.</span></li>
+                    <li><i></i> <span> Moves servos to their default position for a fresh start.</span></li>
+                    </ul>
+
+                    <div class="code-container">
+                      <div class="code-header">
+                          <span>Code</span>
+                          
+                      </div>
+                      <pre><code class="language-cpp">
+                        void resetArm() {
+                          // Clear all stored positions
+                          for (int i = 0; i < maxSteps; i++) {
+                              for (int j = 0; j < 6; j++) {
+                                  steps[i][j] = 0;
+                              }
+                          }
+                      
+                          // Reset index to start fresh
+                          stepIndex = 0;
+                      
+                          // Move servos to their initial position
+                          servo1.write(initialPos1);
+                          servo2.write(initialPos2);
+                          servo3.write(initialPos3);
+                          servo4.write(initialPos4);
+                          servo5.write(initialPos5);
+                          servo6.write(initialPos6);
+                      
+                          // Send confirmation message via Bluetooth
+                          Bluetooth.println("RESET_DONE");
+                      }
+                      
+                          
+                      </code></pre>
+                  </div>
+                  <br>
+                  <h5>Key Features:</h5>
+                  <br>
+                  <ul>
+                    <li><i></i> <span> Instantly clears previous programming for a fresh start.</span></li>
+                    <li><i></i> <span> Ensures servos return to their initial position.</span></li>
+                    <li><i></i> <span> Bluetooth confirmation message indicates reset completion.</span></li>
+                  
+                    </ul>
+                    <br>
+                    <br>
+                    <h3>Overall Code</h3>
+                    <br>
+                    <div class="code-container">
+                      <div class="code-header">
+                          <span>Code</span>
+                          
+                      </div>
+                      <pre><code class="language-cpp">
+                        #include <SoftwareSerial.h>  // For Bluetooth communication
+                          #include <Servo.h>           // For controlling servos
+                          
+                          // Define Bluetooth Module RX & TX pins
+                          #define BT_RX 10
+                          #define BT_TX 11
+                          
+                          // Initialize Bluetooth serial communication
+                          SoftwareSerial Bluetooth(BT_RX, BT_TX);
+                          
+                          // Define servo motors
+                          Servo base, shoulder, elbow, wrist, gripper, extraServo;
+                          
+                          // Variables to store positions
+                          int basePos = 90, shoulderPos = 90, elbowPos = 90, wristPos = 90, gripperPos = 90, extraPos = 90;
+                          int prevBase, prevShoulder, prevElbow, prevWrist, prevGripper, prevExtra;
+                          
+                          // Arrays for automatic mode
+                          int autoSteps[10][6];  // Stores 10 positions for the 6 servos
+                          int stepIndex = 0;
+                          bool runMode = false;  // Flag for running stored movements
+                          int speedDelay = 10;   // Delay time for smooth movement
+                          
+                          void setup() {
+                              Bluetooth.begin(9600); // Start Bluetooth communication
+                              base.attach(3);
+                              shoulder.attach(5);
+                              elbow.attach(6);
+                              wrist.attach(9);
+                              gripper.attach(10);
+                              extraServo.attach(11);
+                              
+                              Serial.begin(9600);
+                              Serial.println("Robotic Arm Ready...");
+                          }
+                          
+                          void loop() {
+                              if (Bluetooth.available()) { // Check if data is received
+                                  String dataIn = Bluetooth.readString(); // Read incoming data
+                                  
+                                  // Identify servo control command
+                                  if (dataIn.startsWith("s1")) {
+                                      basePos = dataIn.substring(2).toInt();
+                                      moveServoGradually(base, prevBase, basePos);
+                                  } 
+                                  else if (dataIn.startsWith("s2")) {
+                                      shoulderPos = dataIn.substring(2).toInt();
+                                      moveServoGradually(shoulder, prevShoulder, shoulderPos);
+                                  } 
+                                  else if (dataIn.startsWith("s3")) {
+                                      elbowPos = dataIn.substring(2).toInt();
+                                      moveServoGradually(elbow, prevElbow, elbowPos);
+                                  } 
+                                  else if (dataIn.startsWith("s4")) {
+                                      wristPos = dataIn.substring(2).toInt();
+                                      moveServoGradually(wrist, prevWrist, wristPos);
+                                  } 
+                                  else if (dataIn.startsWith("s5")) {
+                                      gripperPos = dataIn.substring(2).toInt();
+                                      moveServoGradually(gripper, prevGripper, gripperPos);
+                                  } 
+                                  else if (dataIn.startsWith("s6")) {
+                                      extraPos = dataIn.substring(2).toInt();
+                                      moveServoGradually(extraServo, prevExtra, extraPos);
+                                  } 
+                                  else if (dataIn.startsWith("SAVE")) { // Save current position
+                                      savePosition();
+                                  } 
+                                  else if (dataIn.startsWith("RUN")) { // Start auto mode
+                                      runMode = true;
+                                      runServoSequence();
+                                  } 
+                                  else if (dataIn.startsWith("RESET")) { // Reset positions
+                                      resetPositions();
+                                  } 
+                                  else if (dataIn.startsWith("SPD")) { // Adjust speed
+                                      speedDelay = dataIn.substring(3).toInt();
+                                  }
+                              }
+                          }
+                          
+                          // Gradual movement function
+                          void moveServoGradually(Servo servo, int &prevPos, int targetPos) {
+                              if (prevPos != targetPos) {
+                                  int step = (prevPos < targetPos) ? 1 : -1;
+                                  for (int pos = prevPos; pos != targetPos; pos += step) {
+                                      servo.write(pos);
+                                      delay(speedDelay);
+                                  }
+                                  servo.write(targetPos);
+                                  prevPos = targetPos;
+                              }
+                          }
+                          
+                          // Save the current position into array
+                          void savePosition() {
+                              if (stepIndex < 10) {
+                                  autoSteps[stepIndex][0] = basePos;
+                                  autoSteps[stepIndex][1] = shoulderPos;
+                                  autoSteps[stepIndex][2] = elbowPos;
+                                  autoSteps[stepIndex][3] = wristPos;
+                                  autoSteps[stepIndex][4] = gripperPos;
+                                  autoSteps[stepIndex][5] = extraPos;
+                                  stepIndex++;
+                                  Serial.println("Position Saved");
+                              } else {
+                                  Serial.println("Memory Full!");
+                              }
+                          }
+                          
+                          // Run the saved sequence
+                          void runServoSequence() {
+                              while (runMode) {
+                                  for (int i = 0; i < stepIndex; i++) {
+                                      moveServoGradually(base, prevBase, autoSteps[i][0]);
+                                      moveServoGradually(shoulder, prevShoulder, autoSteps[i][1]);
+                                      moveServoGradually(elbow, prevElbow, autoSteps[i][2]);
+                                      moveServoGradually(wrist, prevWrist, autoSteps[i][3]);
+                                      moveServoGradually(gripper, prevGripper, autoSteps[i][4]);
+                                      moveServoGradually(extraServo, prevExtra, autoSteps[i][5]);
+                                      
+                                      // Check for new commands while running
+                                      if (Bluetooth.available()) {
+                                          String dataIn = Bluetooth.readString();
+                                          if (dataIn.startsWith("PAUSE")) {
+                                              runMode = false;
+                                          } 
+                                          else if (dataIn.startsWith("SPD")) {
+                                              speedDelay = dataIn.substring(3).toInt();
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                          
+                          // Reset all stored positions
+                          void resetPositions() {
+                              for (int i = 0; i < 10; i++) {
+                                  for (int j = 0; j < 6; j++) {
+                                      autoSteps[i][j] = 0;
+                                  }
+                              }
+                              stepIndex = 0;
+                              runMode = false;
+                              Serial.println("Positions Reset");
+                          }
+                          
+                          
+                      </code></pre>
+                  </div>
+                  <br>
+                  <br>
+                  
+            
               </div>
 
         
