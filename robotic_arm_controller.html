@@ -100,9 +100,9 @@
         <div class="container">
           <div class="row d-flex justify-content-center text-center">
             <div class="col-lg-8">
-              <h1>Hollow Sphere Fabrication Using Laser Cutting</h1>
+              <h1>Robotic Arm Controller</h1>
               <br>
-              <p class="mb-0"></p>
+              <p class="mb-0">This Robotic Arm Controller App is designed to wirelessly control a robotic arm using an Android smartphone and an HC-05 Bluetooth module. Built with MIT App Inventor, the app features sliders to adjust individual servo positions and control speed, along with buttons for saving and running automated movements. The app sends commands via Bluetooth, allowing precise control over each joint. Users can program sequences of movements and execute them automatically, making the robotic arm adaptable for various tasks.</p>
             </div>
           </div>
         </div>
@@ -114,12 +114,26 @@
 
 
             <div class="col-lg-13" data-aos="fade-up" data-aos-delay="200">
-                <h3>Introduction</h3>
+                <h2>Robotic Arm Controller Via Bluetooth</h2>
                 <br>
-                <p>Creating a precise hollow sphere using laser cutting requires careful planning and execution. The goal of this assignment was to design and fabricate a sphere where the internal diameter is 75% of the outer diameter, ensuring structural integrity while optimizing material usage. For this purpose, we selected Medium Density Fiberboard (MDF) with a thickness of 2mm as the material of choice.</p>
+                <h3>Code Breakdown</h3>
                 <br>
-                <p>Several construction methods were considered for achieving a spherical shape, each with distinct advantages and challenges. Ultimately, the Layered Contours Method was chosen for its simplicity, durability, and ease of fabrication.</p>
+                <p>In this guide, we will go through the Arduino code for controlling a robotic arm via Bluetooth. The code is divided into sections for easy understanding. At the end, you’ll find the complete source code.</p>
                 <br>
+                <h4>1.Including Libraries & Defining Components</h4>
+                <br>
+                <p>The first step is to include the necessary libraries and define the hardware components.</p>
+                <br>
+                <h5>Libraries Required</h5>
+                <br>
+                
+                <ul>
+                  <li><i></i> <span><b>SoftwareSerial.h</b> – Enables serial communication for the HC-05 Bluetooth module.</span></li>
+                  <li><i></i> <span><b>Servo.h </b>– Controls the six servo motors.</span></li>
+                  </ul>
+                <br>
+                <p>Both libraries come pre-installed with the Arduino IDE, so no extra installation is required.</p>
+                
 
                 <div class="code-container">
                   <div class="code-header">
