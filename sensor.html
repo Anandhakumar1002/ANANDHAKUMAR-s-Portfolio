@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Laser cut Details</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+    
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+
+    
+  <link href="assets/css/main.css" rel="stylesheet">
+
+</head>
+
+<body class="portfolio-details-page">
+
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center">
+          
+          
+        <h1 class="sitename">Protosem 3.3</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="resume.html">Resume</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="protosem3.3.html">Protosem 3.3</a></li>
+          
+          <li class="dropdown"><a href="#"><span>Others</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="achivements.html">Achivements</a></li>
+              <li><a href="presentation.html">Presentations</a></li>
+              <li><a href="certificates.html">Certificates</a></li>
+              <li><a href="volunteering.html">Volunteering</a></li>
+            </ul>
+          </li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+      
+    <div class="page-title" data-aos="fade">
+      <div class="heading">
+        <div class="container">
+          <div class="row d-flex justify-content-center text-center">
+            <div class="col-lg-8">
+              <h1>Understanding the Sensor Behind the Thing - LDR Sensor</h1>
+              <br>
+              <p class="mb-0"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="container">
+        <h3 class="sitename"></h3>
+
+
+           
+        <h3>1. Introduction</h3>
+        <p>The objective of this task was to understand the working of an analog sensor, analyze its datasheet, collect real-time data, and visualize the results. The Light Dependent Resistor (LDR) was chosen as the sensor.</p>
+
+        <h3>2. Sensor Selection</h3>
+        <ul>
+          <li>Diameter: 5mm</li>
+          <li>No. of Pins: 2</li>
+          <li>Type: PCB Through Hole</li>
+          <li>Max Operating Temperature: +800°C (Approx.)</li>
+          <li>Dark resistance: 1-20MΩ</li>
+        </ul>
+
+        <h3>3. Working Principle</h3>
+        <p>An LDR changes its resistance based on light intensity using the photoelectric effect. More light → less resistance. Less light → higher resistance.</p>
+
+        <h4>Input Voltage & Current</h4>
+        <p>Operated at 5V. Current depends on the resistance of the LDR and the value of the series resistor used.</p>
+
+        <h3>4. Raw Data Using Oscilloscope</h3>
+        <p>Components used:</p>
+        <ul>
+          <li>LDR</li>
+          <li>10kΩ Resistor (Voltage Divider)</li>
+          <li>5V Power Supply</li>
+          <li>Oscilloscope (MSO/DSO)</li>
+        </ul>
+        <p>Conditions observed:</p>
+        <ul>
+          <li>High Light: Low Resistance, High Voltage</li>
+          <li>Medium Light: Moderate Resistance, Intermediate Voltage</li>
+          <li>Low Light: High Resistance, Low Voltage</li>
+        </ul>
+
+        <h3>5. Tinkercad Simulation</h3>
+        <p>Used:</p>
+        <ul>
+          <li>10kΩ Resistor</li>
+          <li>LDR</li>
+          <li>Arduino Uno</li>
+          <li>LCD (LiquidCrystal_I2C)</li>
+        </ul>
+        <p>Code implemented ADC reading, voltage calculation, resistance conversion, lux estimation, current calculation and displayed results on LCD & serial monitor.</p>
+
+        <h3>6. Real Hardware Implementation</h3>
+        <p>Same code and concept as Tinkercad, implemented using real components. Displayed output both on LCD and Serial Monitor.</p>
+
+        <h3>7. Arduino Code (Extract)</h3>
+        <pre><code>#include &lt;Wire.h&gt;
+          #include &lt;LiquidCrystal_I2C.h&gt;
+          LiquidCrystal_I2C lcd(0x27, 16, 2);
+          int LDR_PIN = A0;
+          const float R_fixed = 10000.0;
+          const float A = 300.0;
+          const float B = 1.2;
+          // Read, calculate voltage, R_LDR, Lux, Current and display on LCD
+        </code></pre>
+
+        <h3>8. ESP32 Integration</h3>
+        <p>Arduino lacks built-in WiFi for cloud logging. Switched to ESP32 WROOM to enable Firebase integration. Faced some limitations with NodeMCU ESP8266 such as ADC resolution and connectivity.</p>
+
+        <h3>9. ESP32 Code Snippet (Firebase)</h3>
+        <pre><code>#include &lt;WiFi.h&gt;
+          #include &lt;Firebase_ESP_Client.h&gt;
+          #define LDR_PIN 34
+          // ADC read, calculate voltage, resistance, lux, upload to Firebase
+        </code></pre>
+
+        <h3>10. Conclusion</h3>
+        <p>This project enabled complete understanding of the LDR sensor, from analog behavior to real-time monitoring and cloud data logging using ESP32. It showcases practical implementation of IoT-based sensor systems and calibration techniques.</p>
+      </div>
+
+        
+        
+      </div>
+      
+
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+    <div class="container">
+      <h3 class="sitename">Personal</h3>
+      <p>"Let the future tell the truth, and evaluate each one according to his work and accomplishments."– Nikola Tesla</p>
+      <div class="social-links d-flex justify-content-center">
+        <a href="https://x.com/anandhakum90893?t=99oHoji4nd0amJqK8RcpiQ&s=09"><i class="bi bi-twitter-x"></i></a>
+        <a href="https://www.facebook.com/profile.php?id=100085369011362"><i class="bi bi-facebook"></i></a>
+        <a href="https://www.instagram.com/anandhakumar1002?igsh=bWdjYTEwNThlN2dz"><i class="bi bi-instagram"></i></a>
+        <a href="https://github.com/Anandhakumar1002"><i class="bi bi-skype"></i></a>
+        <a href="https://www.linkedin.com/in/anandhakumar-a-13587730a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="bi bi-linkedin"></i></a>
+      </div>
+      
+    </div>
+  </footer>
+
+    
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    
+  <div id="preloader"></div>
+
+    
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/typed.js/typed.umd.js"></script>
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+
+    
+  <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
