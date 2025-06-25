@@ -27,6 +27,32 @@
     
   <link href="assets/css/main.css" rel="stylesheet">
 
+   <style>
+    
+    .code-container {
+        position: relative;
+        width:100%;
+        background: #1e1e1e;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .code-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        background: #333;
+        color: #ccc;
+        font-size: 14px;
+    }
+    
+    pre {
+        margin: 0;
+        padding: 15px;
+        overflow-x: auto;
+    }
+</style>
+
 </head>
 
 <body class="portfolio-details-page">
@@ -90,6 +116,10 @@
         <p>The objective of this task was to understand the working of an analog sensor, analyze its datasheet, collect real-time data, and visualize the results. The Light Dependent Resistor (LDR) was chosen as the sensor.</p>
 
         <h3>2. Sensor Selection</h3>
+        <br>
+        <img src="assets/img/protosem.3.3/Sensor/ldr-8mm-ldr.webp" alt="" class="img-fluid services-img">
+        <br>
+        <br>
         <ul>
           <li>Diameter: 5mm</li>
           <li>No. of Pins: 2</li>
@@ -112,14 +142,37 @@
           <li>5V Power Supply</li>
           <li>Oscilloscope (MSO/DSO)</li>
         </ul>
-        <p>Conditions observed:</p>
+        <br>
+        <img src="assets/img/protosem.3.3/Sensor/1.webp" alt="" class="img-fluid services-img">
+        <br>
+        <br>
+        <h3>Conditions observed:</h3>
         <ul>
           <li>High Light: Low Resistance, High Voltage</li>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/oscilloscope/4.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
           <li>Medium Light: Moderate Resistance, Intermediate Voltage</li>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/oscilloscope/3.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
           <li>Low Light: High Resistance, Low Voltage</li>
+          <img src="assets/img/protosem.3.3/Sensor/oscilloscope/5.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          
         </ul>
 
         <h3>5. Tinkercad Simulation</h3>
+        <br>
+        <img src="assets/img/protosem.3.3/Sensor/simulation/1.2.webp" alt="" class="img-fluid services-img">
+        <br>
+        <br>
+        <img src="assets/img/protosem.3.3/Sensor/simulation/8.2.webp" alt="" class="img-fluid services-img">
+        <br>
+        <br>
         <p>Used:</p>
         <ul>
           <li>10kΩ Resistor</li>
@@ -129,29 +182,360 @@
         </ul>
         <p>Code implemented ADC reading, voltage calculation, resistance conversion, lux estimation, current calculation and displayed results on LCD & serial monitor.</p>
 
+        <h3>Conditions observed:</h3>
+        <ul>
+          <li>High Light</li>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/simulation/2.2.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          
+          <img src="assets/img/protosem.3.3/Sensor/simulation/3.2.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <li>Medium Light</li>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/simulation/4.2.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/simulation/5.2.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+
+          <li>Low Light</li>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/simulation/6.2.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/simulation/7.2.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          
+        </ul>
+
+        <div class="code-container">
+                  <div class="code-header">
+                      <span>Code</span>
+                      
+                  </div>
+                  <pre><code class="language-cpp">
+                    #include <Wire.h>
+                    #include <LiquidCrystal_I2C.h>
+
+                    LiquidCrystal_I2C lcd(0x20, 16, 2);  // Update I2C address if needed
+                    int LDR_PIN = A0;  // LDR connected to A0
+                    const float R_fixed = 10000.0;  // 10kΩ resistor in voltage divider
+
+                    // Adjusted Calibration Constants (Use Best-Fit Values from Python)
+                    const float A = 300.0;  // Replace with your calculated A
+                    const float B = 1.2;    // Replace with your calculated B
+
+                    // Function to get stable readings
+                    int getSmoothReading(int pin, int samples = 10) {
+                      long sum = 0;
+                      for (int i = 0; i < samples; i++) {
+                        sum += analogRead(pin);
+                        delay(5);  // Reduce noise
+                      }
+                      return sum / samples;
+                    }
+
+                    void setup() {
+                      Serial.begin(9600);
+                      lcd.init();
+                      lcd.backlight();
+                      lcd.setCursor(0, 0);
+                      lcd.print("Light Intensity:");
+                    }
+
+                    void loop() {
+                      int adcValue = getSmoothReading(LDR_PIN);
+                      float voltage = (adcValue / 1023.0) * 5.0;  // Convert ADC to voltage
+
+                      // Calculate LDR resistance
+                      float R_LDR = R_fixed * (1023.0 / adcValue - 1.0);
+                      
+                      // Convert resistance to Lux using updated formula
+                      float lux = A * pow(R_LDR, -B);
+
+                      // Calculate current (I = V / R_LDR)
+                      float current = (R_LDR > 0) ? voltage / R_LDR : 0;  // Avoid division by zero
+
+                      // Display on LCD (Two Lines)
+                      lcd.setCursor(0, 1);
+                      lcd.print("Lx:");
+                      lcd.print(lux, 4);  // Show Lux with 4 decimal places
+                      lcd.print(" V:");
+                      lcd.print(voltage, 2);
+
+                      delay(1000);
+                      lcd.clear();
+                      
+                      lcd.setCursor(0, 0);
+                      lcd.print("R: ");
+                      lcd.print(R_LDR, 0);
+                      lcd.print("Ω");
+
+                      lcd.setCursor(0, 1);
+                      lcd.print("I: ");
+                      lcd.print(current * 1000, 2);  // Convert A to mA for better readability
+                      lcd.print(" mA");
+
+                      // Print to Serial Monitor
+                      Serial.print("ADC: ");
+                      Serial.print(adcValue);
+                      Serial.print(" | R_LDR: ");
+                      Serial.print(R_LDR, 0);
+                      Serial.print("Ω | Lux: ");
+                      Serial.print(lux, 4);  // Show Lux with 4 decimal places
+                      Serial.print(" lx | Voltage: ");
+                      Serial.print(voltage, 2);
+                      Serial.print(" V | Current: ");
+                      Serial.print(current * 1000, 2);
+                      Serial.println(" mA");
+
+                      delay(1000);  // Refresh Rate
+                    }
+
+
+                      
+                  </code></pre>
+              </div>
+              <br>
+              <br>
+
+
         <h3>6. Real Hardware Implementation</h3>
+        <br>
+        <h3> Arduino Integration</h3>
+        <br>
+        <img src="assets/img/protosem.3.3/Sensor/arduino/10.1.jpeg" alt="" class="img-fluid services-img">
+        <br>
+        <br>
+        <p>Used:</p>
+        <ul>
+          <li>10kΩ Resistor</li>
+          <li>LDR</li>
+          <li>Arduino Uno</li>
+          <li>LCD (LiquidCrystal_I2C)</li>
+        </ul>
+
+        <h3>Conditions observed:</h3>
+        <ul>
+          <li>High Light</li>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/7.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/1.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/2.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/11.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          
+          <li>Medium Light</li>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/8.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/3.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/4.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/12.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+
+          <li>Low Light</li>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/9.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/5.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/6.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+          <img src="assets/img/protosem.3.3/Sensor/arduino/13.1.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
+        </ul>
         <p>Same code and concept as Tinkercad, implemented using real components. Displayed output both on LCD and Serial Monitor.</p>
+        <br>
+        <div class="code-container">
+                  <div class="code-header">
+                      <span>Code</span>
+                      
+                  </div>
+                  <pre><code class="language-cpp">
+                    #include <Wire.h>
+                    #include <LiquidCrystal_I2C.h>
 
-        <h3>7. Arduino Code (Extract)</h3>
-        <pre><code>#include &lt;Wire.h&gt;
-          #include &lt;LiquidCrystal_I2C.h&gt;
-          LiquidCrystal_I2C lcd(0x27, 16, 2);
-          int LDR_PIN = A0;
-          const float R_fixed = 10000.0;
-          const float A = 300.0;
-          const float B = 1.2;
-          // Read, calculate voltage, R_LDR, Lux, Current and display on LCD
-        </code></pre>
+                    LiquidCrystal_I2C lcd(0x27, 16, 2);  // Update I2C address if needed
+                    int LDR_PIN = A0;  // LDR connected to A0
+                    const float R_fixed = 10000.0;  // 10kΩ resistor in voltage divider
 
-        <h3>8. ESP32 Integration</h3>
+                    // Adjusted Calibration Constants (Use Best-Fit Values from Python)
+                    const float A = 300.0;  // Replace with your calculated A
+                    const float B = 1.2;    // Replace with your calculated B
+
+                    // Function to get stable readings
+                    int getSmoothReading(int pin, int samples = 10) {
+                      long sum = 0;
+                      for (int i = 0; i < samples; i++) {
+                        sum += analogRead(pin);
+                        delay(5);  // Reduce noise
+                      }
+                      return sum / samples;
+                    }
+
+                    void setup() {
+                      Serial.begin(9600);
+                      lcd.init();
+                      lcd.backlight();
+                      lcd.setCursor(0, 0);
+                      lcd.print("Light Intensity:");
+                    }
+
+                    void loop() {
+                      int adcValue = getSmoothReading(LDR_PIN);
+                      float voltage = (adcValue / 1023.0) * 5.0;  // Convert ADC to voltage
+
+                      // Calculate LDR resistance
+                      float R_LDR = R_fixed * (1023.0 / adcValue - 1.0);
+                      
+                      // Convert resistance to Lux using updated formula
+                      float lux = A * pow(R_LDR, -B);
+
+                      // Calculate current (I = V / R_LDR)
+                      float current = (R_LDR > 0) ? voltage / R_LDR : 0;  // Avoid division by zero
+
+                      // Display on LCD (Two Lines)
+                      lcd.setCursor(0, 1);
+                      lcd.print("Lx:");
+                      lcd.print(lux, 4);  // Show Lux with 4 decimal places
+                      lcd.print(" V:");
+                      lcd.print(voltage, 2);
+
+                      delay(1000);
+                      lcd.clear();
+                      
+                      lcd.setCursor(0, 0);
+                      lcd.print("R: ");
+                      lcd.print(R_LDR, 0);
+                      lcd.print(" Ohms");
+
+                      lcd.setCursor(0, 1);
+                      lcd.print("I: ");
+                      lcd.print(current * 1000, 2);  // Convert A to mA for better readability
+                      lcd.print(" mA");
+
+                      // Print to Serial Monitor
+                      Serial.print("ADC: ");
+                      Serial.print(adcValue);
+                      Serial.print(" | R_LDR: ");
+                      Serial.print(R_LDR, 0);
+                      Serial.print("Ω | Lux: ");
+                      Serial.print(lux, 4);  // Show Lux with 4 decimal places
+                      Serial.print(" lx | Voltage: ");
+                      Serial.print(voltage, 2);
+                      Serial.print(" V | Current: ");
+                      Serial.print(current * 1000, 2);
+                      Serial.println(" mA");
+
+                      delay(1000);  // Refresh Rate
+                    }
+
+
+                  </code></pre>
+              </div>
+              <br>
+              <br>
+        
+
+        <h3>ESP32 Integration</h3>
         <p>Arduino lacks built-in WiFi for cloud logging. Switched to ESP32 WROOM to enable Firebase integration. Faced some limitations with NodeMCU ESP8266 such as ADC resolution and connectivity.</p>
+        <img src="assets/img/protosem.3.3/Sensor/esp/1.4.webp" alt="" class="img-fluid services-img">
+          <br>
+          <br>
 
         <h3>9. ESP32 Code Snippet (Firebase)</h3>
-        <pre><code>#include &lt;WiFi.h&gt;
-          #include &lt;Firebase_ESP_Client.h&gt;
-          #define LDR_PIN 34
-          // ADC read, calculate voltage, resistance, lux, upload to Firebase
-        </code></pre>
+        <br>
+        <img src="assets/img/protosem.3.3/Sensor/firebase/1.webp" alt="" class="img-fluid services-img">
+        <br>
+        <br>
+        <img src="assets/img/protosem.3.3/Sensor/firebase/2.webp" alt="" class="img-fluid services-img">
+        <br>
+        <br>
+        <img src="assets/img/protosem.3.3/Sensor/firebase/3.webp" alt="" class="img-fluid services-img">
+        <br>
+        <br>
+        <img src="assets/img/protosem.3.3/Sensor/firebase/4.webp" alt="" class="img-fluid services-img">
+        <br>
+        <br>
+        <img src="assets/img/protosem.3.3/Sensor/firebase/5.webp" alt="" class="img-fluid services-img">
+        <br>
+        <br>
+        <div class="code-container">
+                  <div class="code-header">
+                      <span>Code</span>
+                      
+                  </div>
+                  <pre><code class="language-cpp">
+                      #include <Arduino.h>
+                      #include <WiFi.h>
+                      #include <Firebase_ESP_Client.h>
+                      #include "addons/TokenHelper.h"
+                      #include "addons/RTDBHelper.h"
+
+                      #define WIFI_SSID "YourWiFi"
+                      #define WIFI_PASSWORD "YourPassword"
+                      #define API_KEY "YourFirebaseAPIKey"
+                      #define DATABASE_URL "YourDatabaseURL"
+
+                      FirebaseData fbdo;
+                      FirebaseAuth auth;
+                      FirebaseConfig config;
+                      bool signupOK = false;
+                      #define LDR_PIN 34
+                      #define FIXED_RESISTOR 10000.0
+                      const float A = 300.0;
+                      const float B = 1.2;
+                      unsigned long sendDataPrevMillis = 0;
+
+                      void setup() {
+                          Serial.begin(115200);
+                          WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+                          while (WiFi.status() != WL_CONNECTED) { delay(300); }
+                          config.api_key = API_KEY;
+                          config.database_url = DATABASE_URL;
+                          Firebase.begin(&config, &auth);
+                          Firebase.reconnectWiFi(true);
+                      }
+
+                      void loop() {
+                          if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 1000)) {
+                              sendDataPrevMillis = millis();
+                              int adcValue = analogRead(LDR_PIN);
+                              float voltage = (adcValue / 4095.0) * 3.3;
+                              float R_LDR = (FIXED_RESISTOR * (3.3 / voltage - 1.0));
+                              float lux = A * pow(R_LDR, -B);
+                              Firebase.RTDB.setFloat(&fbdo, "LDR_Sensor/LUX", lux);
+                          }
+                      }
+
+
+                  </code></pre>
+              </div>
+              <br>
+              <br>
 
         <h3>10. Conclusion</h3>
         <p>This project enabled complete understanding of the LDR sensor, from analog behavior to real-time monitoring and cloud data logging using ESP32. It showcases practical implementation of IoT-based sensor systems and calibration techniques.</p>
