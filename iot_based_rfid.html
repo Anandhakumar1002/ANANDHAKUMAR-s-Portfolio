@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <me
+          charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Computational Hardware (IoT)</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+    
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+
+    
+  <link href="assets/css/main.css" rel="stylesheet">
+
+  <style>
+    
+    .code-container {
+        position: relative;
+        width:100%;
+        background: #1e1e1e;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .code-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        background: #333;
+        color: #ccc;
+        font-size: 14px;
+    }
+    
+    pre {
+        margin: 0;
+        padding: 15px;
+        overflow-x: auto;
+    }
+</style>
+
+</head>
+
+<body class="portfolio-details-page">
+
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center">
+          
+          
+        <h1 class="sitename">Protosem 3.3</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="resume.html">Resume</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="protosem3.3.html" class="active">Protosem 3.3</a></li>
+          
+          <li class="dropdown"><a href="#"><span>Others</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="achivements.html">Achivements</a></li>
+              <li><a href="presentation.html">Presentations</a></li>
+              <li><a href="certificates.html">Certificates</a></li>
+              <li><a href="volunteering.html">Volunteering</a></li>
+            </ul>
+          </li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+      
+    <div class="page-title" data-aos="fade">
+      <div class="heading">
+        <div class="container">
+          <div class="row d-flex justify-content-center text-center">
+            <div class="col-lg-8">
+              <h1>IoT-Based RFID Access Control System with Real-Time Feedback</h1>
+              <br>
+              <p class="mb-0"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="container">
+        <h3 class="sitename"></h3>
+
+
+            <div class="col-lg-13" data-aos="fade-up" data-aos-delay="200">
+                
+                <h2>1. Introduction</h2>
+                <br>
+                <p>This document outlines the setup and operation of an RFID-based access control system using an ESP32, RC522 RFID module, LCD display, buzzer, LED, and servo motor. The system validates RFID tags and provides real-time feedback using various actuators.</p>
+                <br>
+                <h2>2. Component List</h2>
+                <br>
+                <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Component</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <th scope="row">1</th>
+                    <td>ESP32 Dev Board</td>
+                    <td>1</td>
+                    <td>Main microcontroller with Wi-Fi capability</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">2</th>
+                    <td>RC522 RFID Module</td>
+                    <td>1</td>
+                    <td>For reading RFID tags</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">3</th>
+                    <td>16x2 LCD (I2C)</td>
+                    <td>1</td>
+                    <td>Displays UID and access status</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">4</th>
+                    <td>Buzzer</td>
+                    <td>1</td>
+                    <td>Provides audible feedback</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">5</th>
+                    <td>LED</td>
+                    <td>1</td>
+                    <td>Indicates access status visually</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">6</th>
+                    <td>Servo Motor</td>
+                    <td>1</td>
+                    <td>Simulates door unlocking mechanism</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">7</th>
+                    <td>Jumper Wires</td>
+                    <td>-</td>
+                    <td>For circuit connections</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">8</th>
+                    <td>Breadboard</td>
+                    <td>1</td>
+                    <td>(Optional) For prototyping</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">9</th>
+                    <td>Power Supply</td>
+                    <td>1</td>
+                    <td>External 5V for powering servo motor</td>
+                    </tr>
+                </tbody>
+                </table>
+                <br>
+                <h2>3. Pin Configuration</h2>
+                <br>
+                <img src="assets/img/protosem.3.3/rfid/1.webp" alt="" class="img-fluid services-img">
+                <br>
+                <br>
+                <br>
+                <h3>3.1 RC522 RFID Module ↔ ESP32</h3>
+                <br>
+                
+                <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">RC522 Pin</th>
+                    <th scope="col">ESP32 GPIO</th>
+                    <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <th scope="row">1</th>
+                    <td>SDA</td>
+                    <td>GPIO5</td>
+                    <td>Slave Select</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">2</th>
+                    <td>SCK</td>
+                    <td>GPIO18</td>
+                    <td>Serial Clock</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">3</th>
+                    <td>MOSI</td>
+                    <td>GPIO23</td>
+                    <td>Master Out Slave In</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">4</th>
+                    <td>MISO</td>
+                    <td>GPIO19</td>
+                    <td>Master In Slave Out</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">5</th>
+                    <td>RST</td>
+                    <td>GPIO4</td>
+                    <td>Reset</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">6</th>
+                    <td>VCC</td>
+                    <td>3.3V</td>
+                    <td>Power supply</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">7</th>
+                    <td>GND</td>
+                    <td>GND</td>
+                    <td>Ground</td>
+                    </tr>
+                </tbody>
+                </table>
+                <br>
+                <br>
+                <h3>3.2 LED, Buzzer, Servo</h3>
+                <br>
+                <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Component</th>
+                    <th scope="col">ESP32 GPIO</th>
+                    <th scope="col">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <th scope="row">1</th>
+                    <td>LED</td>
+                    <td>GPIO2</td>
+                    <td>Connect via 220Ω resistor to ground</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">2</th>
+                    <td>Buzzer</td>
+                    <td>GPIO15</td>
+                    <td>Positive to GPIO15, negative to GND</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">3</th>
+                    <td>Servo</td>
+                    <td>GPIO13</td>
+                    <td>Signal wire from servo to GPIO13</td>
+                    </tr>
+                </tbody>
+                </table>
+                <br>
+                <br>
+                <h3>3.3 LCD (I2C)</h3>
+                <br>
+                <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">LCD Pin</th>
+                    <th scope="col">ESP32 GPIO</th>
+                    <th scope="col">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <th scope="row">1</th>
+                    <td>SDA</td>
+                    <td>GPIO21</td>
+                    <td>I2C Data Line</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">2</th>
+                    <td>SCL</td>
+                    <td>GPIO22</td>
+                    <td>I2C Clock Line</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">3</th>
+                    <td>VCC</td>
+                    <td>5V</td>
+                    <td>Power</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">4</th>
+                    <td>GND</td>
+                    <td>GND</td>
+                    <td>Ground</td>
+                    </tr>
+                </tbody>
+                </table>
+                <br>
+                <br>
+                <h2>4. System Operation</h2>
+                <br>
+                <img src="assets/img/protosem.3.3/rfid/2.webp" alt="" class="img-fluid services-img">
+                <br>
+                <br>
+                <ol>
+                    <li><i><span>RFID card is scanned using RC522</span></i></li>
+                    <li><i><span>UID is read and compared against a predefined UID.</span></i></li>
+                    <li><i><span>If UID matches:</span></i></li>
+                    <ul>
+                        <li><i><span>LED lights up.</span></i></li>
+                        <li><i><span>Buzzer beeps once.</span></i></li>
+                        <li><i><span>Servo motor rotates to unlock.</span></i></li>
+                        <li><i><span>LCD displays "Access Granted" and UID.</span></i></li>
+                    </ul>
+                    <li><i><span>If UID does not match:</span></i></li>
+                    <ul>
+                        <li><i><span>LED blinks three times.</span></i></li>
+                        <li><i><span>Buzzer beeps three times.</span></i></li>
+                        <li><i><span>LCD displays "Access Denied" and UID.</span></i></li>
+
+
+                    </ul>
+                    
+                </ol>
+                <br>
+                <br>
+                <img src="assets/img/protosem.3.3/rfid/3.webp" alt="" class="img-fluid services-img">
+                <br>
+                <br>
+                <img src="assets/img/protosem.3.3/rfid/4.webp" alt="" class="img-fluid services-img">
+                <br>
+                <br>
+                <h2>4. Google Apps Script Setup</h2>
+                <br>
+                <p><b>Steps:</b></p>
+                <ol>
+                    <li><i><span>Go to: <a href="https://script.google.com" target="_blank">https://script.google.com</a></span></i></li>
+                    <li><i><span>Create a new project.</span></i></li>
+                    <li><i><span>Paste the code below and replace <code>YOUR_SPREADSHEET_ID</code> with your actual spreadsheet ID.</span></i></li>
+                </ol>
+                <br>
+                <br>
+                <div class="code-container">
+  <div class="code-header">
+    <span>Code</span>
+  </div>
+  <pre><code class="language-javascript">
+    function doPost(e) {
+    var ss = SpreadsheetApp.openById("https://docs.google.com/spreadsheets/d/1lXv2XE0uamsp9vEsPEHWh_PlTMT8PanuzCiqHM-LTEA/edit?usp=sharing");
+    var sheet = ss.getSheetByName("Sheet1");
+    var uid = e.parameter.uid;
+    var status = e.parameter.status;
+    var timestamp = new Date();
+    sheet.appendRow([timestamp, uid, status]);
+    return ContentService.createTextOutput("Success");
+    }
+  </code></pre>
+</div>
+<br>
+<br>
+                <p>Save the project and deploy as Web App:</p>
+                <ul>
+                    <li><i><span>Execute as: <strong>Me</strong></span></i></li>
+                    <li><i><span>Access: <strong>Anyone</strong></span></i></li>
+                    <li><i><span>Click <strong>Deploy</strong>, authorize, and copy the Web App URL.</span></i></li>
+                </ul>
+                <br>
+                <br>
+                <img src="assets/img/protosem.3.3/rfid/5.webp" alt="" class="img-fluid services-img">
+                <br>
+                <br>
+                <h2>5. ESP32 Arduino Code</h2>
+                <br>
+                <p>The following code reads RFID data, compares the UID, opens the gate if access is granted, logs the data via HTTP POST to Google Sheets, and displays real-time information.</p>
+                <br>
+                <div class="code-container">
+  <div class="code-header">
+    <span>Code</span>
+  </div>
+  <pre><code class="language-cpp">
+    // Include necessary libraries
+    #include &lt;Wire.h&gt;
+    #include &lt;LiquidCrystal_I2C.h&gt;
+    #include &lt;SPI.h&gt;
+    #include &lt;MFRC522.h&gt;
+    #include &lt;ESP32Servo.h&gt;
+    #include &lt;ThreeWire.h&gt;
+    #include &lt;RtcDS1302.h&gt;
+    #include &lt;WiFi.h&gt;
+    #include &lt;HTTPClient.h&gt;
+
+    // Pin definitions
+    #define SS_PIN 5
+    #define RST_PIN 4
+    #define LED_PIN 2
+    #define BUZZER_PIN 15
+    #define SERVO_PIN 13
+    #define DS1302_CLK 14
+    #define DS1302_IO  27
+    #define DS1302_CE  26
+
+    byte knownUID[] = { 0xED, 0x0D, 0x0C, 0x32 };
+
+    // Component setup
+    LiquidCrystal_I2C lcd(0x27, 16, 2);
+    MFRC522 mfrc522(SS_PIN, RST_PIN);
+    Servo gateServo;
+    ThreeWire myWire(DS1302_IO, DS1302_CLK, DS1302_CE);
+    RtcDS1302&lt;ThreeWire&gt; Rtc(myWire);
+
+    // Wi-Fi configuration
+    const char* ssid = "anandhakumar";
+    const char* password = "7092991250";
+    const String scriptURL = "https://script.google.com/macros/s/https://docs.google.com/spreadsheets/d/1lXv2XE0uamsp9vEsPEHWh_PlTMT8PanuzCiqHM-LTEA/edit?usp=sharing";
+
+    void setup() {
+    Serial.begin(115200);
+    SPI.begin();
+    mfrc522.PCD_Init();
+    pinMode(LED_PIN, OUTPUT);
+    pinMode(BUZZER_PIN, OUTPUT);
+    lcd.begin(); lcd.backlight(); lcd.setCursor(0, 0); lcd.print("Scan your card");
+
+    gateServo.setPeriodHertz(50);
+    gateServo.attach(SERVO_PIN, 500, 2400);
+    gateServo.write(0);
+
+    Rtc.Begin();
+    RtcDateTime customTime(2025, 4, 19, 15, 45, 00);
+    Rtc.SetDateTime(customTime);
+    if (!Rtc.IsDateTimeValid()) Serial.println("RTC invalid");
+    if (!Rtc.GetIsRunning()) Rtc.SetIsRunning(true);
+
+    WiFi.begin(ssid, password);
+    Serial.print("Connecting to WiFi");
+    while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
+    Serial.println("\nWiFi connected.");
+    }
+
+    void loop() {
+    if (!mfrc522.PICC_IsNewCardPresent() || !mfrc522.PICC_ReadCardSerial()) return;
+
+    bool match = true;
+    String uidStr = "";
+    lcd.clear(); lcd.setCursor(0, 0); lcd.print("UID: ");
+
+    for (byte i = 0; i &lt; mfrc522.uid.size; i++) {
+        byte val = mfrc522.uid.uidByte[i];
+        uidStr += String(val, HEX);
+        lcd.print(val, HEX);
+        if (i &lt; mfrc522.uid.size - 1) { lcd.print(":"); uidStr += ":"; }
+        if (val != knownUID[i]) match = false;
+    }
+    uidStr.toUpperCase();
+
+    if (match) {
+        Serial.println("✅ Access Granted");
+        lcd.setCursor(0, 1); lcd.print("Access: Granted");
+        digitalWrite(LED_PIN, HIGH); digitalWrite(BUZZER_PIN, HIGH);
+        gateServo.write(180); delay(500);
+        digitalWrite(LED_PIN, LOW); digitalWrite(BUZZER_PIN, LOW);
+        delay(3000); gateServo.write(0);
+        sendToGoogleSheet(uidStr, "Granted");
+    } else {
+        Serial.println("❌ Access Denied");
+        lcd.setCursor(0, 1); lcd.print("Access: Denied");
+        for (int i = 0; i &lt; 3; i++) {
+        digitalWrite(LED_PIN, HIGH); digitalWrite(BUZZER_PIN, HIGH);
+        delay(200); digitalWrite(LED_PIN, LOW); digitalWrite(BUZZER_PIN, LOW);
+        delay(200);
+        }
+        sendToGoogleSheet(uidStr, "Denied");
+    }
+
+    RtcDateTime now = Rtc.GetDateTime();
+    printDateTime(now);
+    mfrc522.PICC_HaltA();
+    mfrc522.PCD_StopCrypto1();
+    delay(1000);
+    }
+
+    void sendToGoogleSheet(String uid, String status) {
+    if (WiFi.status() == WL_CONNECTED) {
+        HTTPClient http;
+        String fullURL = scriptURL + "?uid=" + uid + "&status=" + status;
+        http.begin(fullURL);
+        int httpCode = http.GET();
+        if (httpCode &gt; 0) Serial.print("Data sent: "), Serial.println(httpCode);
+        else Serial.print("Failed to send. Code: "), Serial.println(httpCode);
+        http.end();
+    } else {
+        Serial.println("WiFi not connected");
+    }
+    }
+
+    void printDateTime(const RtcDateTime&amp; dt) {
+    char buf[20];
+    snprintf_P(buf, sizeof(buf), PSTR("%02u/%02u/%04u %02u:%02u:%02u"),
+                dt.Month(), dt.Day(), dt.Year(), dt.Hour(), dt.Minute(), dt.Second());
+    Serial.println(buf);
+    }
+</code></pre>
+</div>
+                <br>
+                <br>
+                <h2>6. Conclusion</h2>
+                <br>
+                <p>This system effectively demonstrates real-time access control and logging using IoT principles. It’s scalable for office entry systems, school attendance tracking, and more.</p>
+     
+              </div>
+
+      </div>
+      
+
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+    <div class="container">
+      <h3 class="sitename">Personal</h3>
+      <p>"Let the future tell the truth, and evaluate each one according to his work and accomplishments."– Nikola Tesla</p>
+      <div class="social-links d-flex justify-content-center">
+        <a href="https://x.com/anandhakum90893?t=99oHoji4nd0amJqK8RcpiQ&s=09"><i class="bi bi-twitter-x"></i></a>
+        <a href="https://www.facebook.com/profile.php?id=100085369011362"><i class="bi bi-facebook"></i></a>
+        <a href="https://www.instagram.com/anandhakumar1002?igsh=bWdjYTEwNThlN2dz"><i class="bi bi-instagram"></i></a>
+        <a href="https://github.com/Anandhakumar1002"><i class="bi bi-skype"></i></a>
+        <a href="https://www.linkedin.com/in/anandhakumar-a-13587730a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="bi bi-linkedin"></i></a>
+      </div>
+      
+    </div>
+  </footer>
+
+    
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    
+  <div id="preloader"></div>
+
+    
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/typed.js/typed.umd.js"></script>
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+
+    
+  <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
